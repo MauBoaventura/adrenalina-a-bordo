@@ -1,0 +1,36 @@
+{
+  "name": "adrenalina-a-bordo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MauBoaventura/adrenalina-a-bordo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MauBoaventura/adrenalina-a-bordo/issues"
+  },
+  "homepage": "https://github.com/MauBoaventura/adrenalina-a-bordo#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.21.1",
+    "moment": "^2.25.3",
+    "cors": "^2.8.5",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^26.4.2",
+    "superagent": "^6.1.0",
+    "supertest": "^4.0.2"
+  }
+}
