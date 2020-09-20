@@ -1,10 +1,10 @@
 const express = require('express')
 const routes = express.Router()
 
-const ClientController = require('./controllers/ClientController')
+const UserController = require('./controllers/UserController')
 
 // Corredores
-routes.get('/', ClientController.index)
+routes.get('/', UserController.index)
 // routes.get('/corredor/:id', RunnerController.get)
 // routes.post('/corredor', [
 //     validator.check('email').isEmail().withMessage('Is not a valid format!'),
