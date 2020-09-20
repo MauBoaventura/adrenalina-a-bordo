@@ -1,6 +1,6 @@
 const app = require("../index");
 
-var port = normalizePort(process.env.PORT || '3031');
+var port = normalizePort(process.env.PORT || '3034');
 //Poe o servidor para rodar ma porta especificada
 app.listen(port, function () {
     console.log("Servidor online rodando na porta: " + port);
