@@ -2,11 +2,11 @@ exports.up = function (knex, Promise) {
     return knex.schema.createTable('trips', function (table) {
         table.increments();
         
-        table.integer('vihecle_id').notNullable().unsigned();
-        table.foreign('vihecle_id').references('id').inTable('vihecles')
+        table.integer('vihecleId').notNullable().unsigned();
+        table.foreign('vihecleId').references('id').inTable('vihecles')
 
-        table.integer('scheduling_id').notNullable().unsigned();
-        table.foreign('scheduling_id').references('id').inTable('schedulings')
+        table.integer('schedulingId').notNullable().unsigned();
+        table.foreign('schedulingsId').references('id').inTable('schedulings')
 
         table.timestamp('createdAt').notNullable().defaultTo(knex.raw('CURRENT_TIMESTAMP'));
         // table.timestamp('updatedAt').defaultTo(knex.raw('NULL ON UPDATE CURRENT_TIMESTAMP'))
