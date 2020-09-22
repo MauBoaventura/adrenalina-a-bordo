@@ -1,11 +1,11 @@
-// const connection = require('../database/connection')
-// const util = require('../util/uteis')
-// const DAOClient = require('../database/DAO/DAOClient')
+const connection = require('../database/connection')
+const util = require('../util/uteis')
+const DAOUser = require('../database/DAO/DAOUser')
 
 module.exports = {
     async index(req, res) {
 
-        // const client = await DAOClient.getAll()
+        // const client = await DAOUser.getAll()
 
         res.json("client")
     },
@@ -13,7 +13,7 @@ module.exports = {
     async get(req, res) {
         const cpf = req.params.cpf;
 
-        const client = await DAOClient.getOneByCPF(cpf)
+        const client = await DAOUser.getOneByCPF(cpf)
         if (client == undefined)
             return res.status(401).json({
                 error: "Client do not exist"
@@ -21,19 +21,19 @@ module.exports = {
         res.json(client)
     },
 
-    async post(req, res) {
+    async cadastro(req, res) {
         const cpf = req.body.cpf;
         const email = req.body.email;
 
         //Verifica se o cpf já esta sendo utilizado
-        if (await util.existeClientecpf(cpf)) {
+        if (await DAOUser.getOneByCPF(cpf) != undefined) {
             return res.status(401).json({
                 error: "Cpf already used!"
             })
         }
 
         //Verifica se o email já esta sendo utilizado
-        if (await util.existeClienteemail(email)) {
+        if (await DAOUser.getOneByEmail(email) != undefined) {
             return res.status(401).json({
                 error: "Email already used!"
             })
@@ -42,7 +42,7 @@ module.exports = {
         //Insere no banco
         try {
             req.body.password = await util.criptografar(req.body.password)
-            await DAOClient.insert(req.body)
+            await DAOUser.insert(req.body)
         } catch (error) {
             res.status(400).send({ error: error })
         }
@@ -59,7 +59,7 @@ module.exports = {
                     error: "Client do not exist!"
                 })
             }
-            await DAOClient.deleteOneByCPF(cpf);
+            await DAOUser.deleteOneByCPF(cpf);
 
             res.status(204).send()
 
@@ -76,7 +76,7 @@ module.exports = {
         const cpf = req.params.cpf;
 
         if (clienteheader == cpf) {
-            const client = await DAOClient.getOneByCPF(cpf)
+            const client = await DAOUser.getOneByCPF(cpf)
 
             //Verifica se o cpf já esta sendo utilizado
             if (!await util.existeClientecpf(cpf)) {
@@ -102,7 +102,7 @@ module.exports = {
                 }
             }
             req.body.password = await util.criptografar(req.body.password)
-            await DAOClient.updateOneByCPF(cpf, req.body)
+            await DAOUser.updateOneByCPF(cpf, req.body)
 
             return res.status(200).send()
         } else {
