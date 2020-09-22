@@ -10,7 +10,7 @@ module.exports = {
         res.json("client")
     },
 
-    async get(req, res) {
+    async login(req, res) {
         const cpf = req.params.cpf;
 
         const client = await DAOUser.getOneByCPF(cpf)
