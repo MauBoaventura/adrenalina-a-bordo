@@ -23,6 +23,8 @@ module.exports = {
         } catch (err) {
             return { error: err }
         }
+        console.log(cpf)
+        console.log(client)
         return client;
     },
 

@@ -5,9 +5,20 @@ const DAOUser = require('../database/DAO/DAOUser')
 module.exports = {
     async index(req, res) {
 
-        // const client = await DAOUser.getAll()
+        const client = await DAOUser.getAll()
 
-        res.json("client")
+        res.json(client)
+    },
+    async get(req, res) {
+        const cpf = req.params.cpf;
+        //Verifica se o cpf existe
+        if (await DAOUser.getOneByCPF(cpf) == undefined) {
+            return res.status(401).json({
+                error: "Client do not exist!"
+            })
+        }
+        let client= await DAOUser.getOneByCPF(cpf);
+        res.json(client)
     },
 
     async login(req, res) {
@@ -54,7 +65,7 @@ module.exports = {
         const cpf = req.params.cpf;
         if (clienteheader == cpf) {
             //Verifica se o cpf existe
-            if (! await util.existeClientecpf(cpf)) {
+            if (await DAOUser.getOneByCPF(cpf) == undefined) {
                 return res.status(401).json({
                     error: "Client do not exist!"
                 })
@@ -79,7 +90,7 @@ module.exports = {
             const client = await DAOUser.getOneByCPF(cpf)
 
             //Verifica se o cpf já esta sendo utilizado
-            if (!await util.existeClientecpf(cpf)) {
+            if (await DAOUser.getOneByCPF(cpf) == undefined) {
                 return res.status(401).json({
                     error: "Client do not exist!"
                 })
@@ -87,7 +98,7 @@ module.exports = {
 
             if (req.body.cpf != clienteheader)
                 //Verifica se o cpf novo já esta sendo utilizado
-                if (await util.existeClientecpf(req.body.cpf)) {
+                if (await DAOUser.getOneByCPF(req.body.cpf) != undefined) {
                     return res.status(401).json({
                         error: "New CPF already used!"
                     })
@@ -95,7 +106,7 @@ module.exports = {
 
             if (client.email != req.body.email) {
                 //Verifica se o email novo já esta sendo utilizado
-                if (await util.existeClienteemail(req.body.email)) {
+                if (await util.existe_Cliente_email(req.body.email)) {
                     return res.status(401).json({
                         error: "New email already used!"
                     })

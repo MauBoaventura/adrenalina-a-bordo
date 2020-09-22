@@ -8,16 +8,16 @@ module.exports = {
     async existe_cpf_cnpj(cpf_cnpj) {
         const sellers = await connection('sellers')
             .select("*")
-            .where({ "cpf_cnpj": cpf_cnpj, "deleted_at": null })
+            .where({ "cpf_cnpj": cpf_cnpj, "deletedAt": null })
             .first()
 
-        const clients = await connection('clients')
+        const users = await connection('users')
             .select("*")
-            .where({ "cpf": cpf_cnpj, "deleted_at": null })
+            .where({ "cpf": cpf_cnpj, "deletedAt": null })
             .first()
 
         //Se não existir cpf cadastrados retorna false
-        if (sellers == undefined && clients == undefined)
+        if (sellers == undefined && users == undefined)
             return false
 
         return true;
@@ -26,7 +26,7 @@ module.exports = {
     async existe_Vendedor_cpf_cnpj(cpf_cnpj) {
         const sellers = await connection('sellers')
             .select("*")
-            .where({ "cpf_cnpj": cpf_cnpj, "deleted_at": null })
+            .where({ "cpf_cnpj": cpf_cnpj, "deletedAt": null })
             .first()
         if (sellers == undefined)
             return false
@@ -37,12 +37,12 @@ module.exports = {
 
     async existe_Cliente_cpf(cpf_cnpj) {
         try {
-            const clients = await connection('clients')
+            const users = await connection('users')
                 .select("*")
-                .where({ "cpf": cpf_cnpj, "deleted_at": null })
+                .where({ "cpf": cpf_cnpj, "deletedAt": null })
                 .first()
 
-            if (clients == undefined) {
+            if (users == undefined) {
                 return false
             }
             return true;
@@ -57,7 +57,7 @@ module.exports = {
     async existe_Vendedor_email(email) {
         const sellers = await connection('sellers')
             .select("*")
-            .where({ "email": email, "deleted_at": null })
+            .where({ "email": email, "deletedAt": null })
             .first()
         if (sellers == undefined)
             return false
@@ -66,9 +66,9 @@ module.exports = {
     },
 
     async existe_Cliente_email(email) {
-        const client = await connection('clients')
+        const client = await connection('users')
             .select("*")
-            .where({"email": email, "deleted_at":null})
+            .where({"email": email, "deletedAt":null})
             .first()
         if (client == undefined)
             return false
