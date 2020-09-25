@@ -21,18 +21,7 @@ module.exports = {
         res.json(client)
     },
 
-    async login(req, res) {
-        const cpf = req.params.cpf;
-
-        const client = await DAOUser.getOneByCPF(cpf)
-        if (client == undefined)
-            return res.status(401).json({
-                error: "Client do not exist"
-            })
-        res.json(client)
-    },
-
-    async cadastro(req, res) {
+    async post(req, res) {
         const cpf = req.body.cpf;
         const email = req.body.email;
 
