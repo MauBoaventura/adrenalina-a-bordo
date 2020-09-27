@@ -25,10 +25,10 @@ module.exports = {
     async post(req, res) {
         const startTime = req.body.startTime;
         const endTime = req.body.endTime;
-        
+
         const specificDay = req.body.specificDay;
-        
-        const weekDays = req.body.weekDays;
+
+        req.body.weekDays = req.body.weekDays.toString();
         
         const startDay = req.body.startDay;
         const endDay = req.body.endDay
@@ -37,7 +37,7 @@ module.exports = {
         try {
             await DAOScheduling.insert(req.body)
         } catch (error) {
-            res.status(400).send({ error: error })
+            return res.status(400).send({ error: error })
         }
         res.status(200).send()
     },

@@ -8,7 +8,8 @@ module.exports = {
                 .select("*")
                 .where({ "deletedAt": null })
         } catch (err) {
-            return { error: err }
+            throw err
+
         }
         return client;
 
@@ -17,16 +18,17 @@ module.exports = {
     async getOne(id) {
         try {
             var client = await connection('schedulings')
-            .select("*")
-            .where({ "id": id, "deletedAt": null })
-            .first()
+                .select("*")
+                .where({ "id": id, "deletedAt": null })
+                .first()
         } catch (err) {
-            return { error: err }
+            throw err
+
         }
         return client;
     },
 
-    
+
     async deleteOneById(id) {
         try {
             let data = moment().format();
@@ -35,7 +37,8 @@ module.exports = {
                 .where({ "id": id, "deletedAt": null })
 
         } catch (err) {
-            return { error: err }
+            throw err
+
         }
     },
 
@@ -46,16 +49,16 @@ module.exports = {
                 .update(atualiza)
 
         } catch (err) {
-            return { error: err }
+            throw err
         }
         return client;
     },
 
     async insert(dados) {
         try {
-           await connection('schedulings').insert(dados)
+            await connection('schedulings').insert(dados)
         } catch (err) {
-            return { error: err }
+            throw err
         }
     },
 
