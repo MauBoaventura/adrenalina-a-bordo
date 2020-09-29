@@ -1,10 +1,8 @@
 const connection = require('../database/connection')
 const util = require('../util/uteis')
 const DAOScheduling = require('../database/DAO/DAOScheduling')
-// const moment = require('moment');
-// moment.locale("pt-br");
 const moment = require('moment-timezone');
-const moment1 = require('moment-timezone');
+
 function verificaConflitoHorario(startTime, endTime, eleStartTime, eleEndTime) {
     eleStartTime = moment(eleStartTime, 'HH:mm').toString()
     eleEndTime = moment(eleEndTime, 'HH:mm').toString()
@@ -31,22 +29,22 @@ function verificaConflitoHorario(startTime, endTime, eleStartTime, eleEndTime) {
     }
 
 }
+
 async function verificaConflito(type, startTime, endTime, specificDay, weekDays, startDay, endDay) {
     const allSpecificDay = await DAOScheduling.getAllSpecificDay();
     const allWeekDays = await DAOScheduling.getAllWeekDays();
     const allIntervalDays = await DAOScheduling.getAllIntervalDays();
     const allIntervalDaysAndWeekDays = await DAOScheduling.getAllIntervalDaysAndWeekDays();
 
-    const day = moment(specificDay, "YYYY-MM-DD")
-
     startTime = moment(startTime, 'HH:mm').toString()
     endTime = moment(endTime, 'HH:mm').toString()
-
+    
     if (startTime > endTime || startTime == endTime) {
         throw 'startTime => endTime'
     }
-
+    
     if (type == 'specificDay') {
+        const day = moment(specificDay, "YYYY-MM-DD")
         //CONFLITO DIA
         allSpecificDay.forEach(element => {
             var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
