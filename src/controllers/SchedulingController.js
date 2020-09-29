@@ -4,7 +4,7 @@ const DAOScheduling = require('../database/DAO/DAOScheduling')
 // const moment = require('moment');
 // moment.locale("pt-br");
 const moment = require('moment-timezone');
-const moment1= require('moment-timezone');
+const moment1 = require('moment-timezone');
 
 async function verificaConflito(type, startTime, endTime, specificDay, weekDays, startDay, endDay) {
     const allSpecificDay = await DAOScheduling.getAllSpecificDay();
@@ -13,21 +13,33 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
     const allIntervalDaysAndWeekDays = await DAOScheduling.getAllIntervalDaysAndWeekDays();
 
 
-    if (startTime > endTime) {
-        throw 'startTime > endTime'
+    startTime = moment(startTime, 'HH:mm').toString()
+    endTime = moment(endTime, 'HH:mm').toString()
+
+    if (startTime > endTime || startTime == endTime) {
+        throw 'startTime => endTime'
     }
 
     if (type == 'specificDay') {
         allSpecificDay.forEach(element => {
-            console.log(new Date(element.specificDay).toLocaleDateString())
-            console.log(new Date())
-            console.log(new Date().toLocaleString('pt-br', {timezone: 'Brazil/brt'}))
-            // console.log(moment(moment.unix(), "DD-MM-YYYY"))
-            // console.log(moment(element.specificDay, "YYYY-MM-DD"))
-            // console.log(specificDay)
-            
-            if (specificDay == moment(element.specificDay, "YYYY-MM-DD").format('YYYY-MM-DD')) {
+            let dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
+
+            if (specificDay == dia) {
                 console.log('Entrou')
+                console.log('\nRequisição')
+
+                console.log(startTime)
+                console.log(endTime)
+
+                element.startTime = moment(element.startTime, 'HH:mm').toString()
+                element.endTime = moment(element.endTime, 'HH:mm').toString()
+                console.log(element.startTime)
+                console.log(element.endTime)
+                //Cobrindo um mesmo horario já exitente
+                if (startTime == element.startTime && endTime == element.endTime) {
+                    //conflito
+                    console.log('conflito 0')
+                }
                 //StartTime está entre um horário reservado
                 if (startTime > element.startTime && startTime < element.endTime) {
                     //conflito
@@ -39,7 +51,7 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
                     console.log('conflito 2')
                 }
                 //Cobrindo um horario já exitente
-                if (startTime < element.startTime && endTime > element.endTime) {
+                if (startTime <= element.startTime && endTime >= element.endTime) {
                     //conflito
                     console.log('conflito 3')
                 }
@@ -64,7 +76,7 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
             if (type == 'intervalDays') {
 
             } else {
-                if (type=='weekDaysAndIntervalDays'){
+                if (type == 'weekDaysAndIntervalDays') {
 
                 }
 
