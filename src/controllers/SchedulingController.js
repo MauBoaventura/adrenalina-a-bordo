@@ -1,8 +1,10 @@
 const connection = require('../database/connection')
 const util = require('../util/uteis')
 const DAOScheduling = require('../database/DAO/DAOScheduling')
-const moment = require('moment');
-moment.locale("pt-br");
+// const moment = require('moment');
+// moment.locale("pt-br");
+const moment = require('moment-timezone');
+const moment1= require('moment-timezone');
 
 async function verificaConflito(type, startTime, endTime, specificDay, weekDays, startDay, endDay) {
     const allSpecificDay = await DAOScheduling.getAllSpecificDay();
@@ -17,10 +19,12 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
 
     if (type == 'specificDay') {
         allSpecificDay.forEach(element => {
-            // console.log(moment(element.specificDay, "YYYY-MM-DD").format('YYYY-MM-DD'))
+            console.log(new Date(element.specificDay).toLocaleDateString())
+            console.log(new Date())
+            console.log(new Date().toLocaleString('pt-br', {timezone: 'Brazil/brt'}))
             // console.log(moment(moment.unix(), "DD-MM-YYYY"))
-            console.log(moment(element.specificDay, "YYYY-MM-DD"))
-            console.log(specificDay)
+            // console.log(moment(element.specificDay, "YYYY-MM-DD"))
+            // console.log(specificDay)
             
             if (specificDay == moment(element.specificDay, "YYYY-MM-DD").format('YYYY-MM-DD')) {
                 console.log('Entrou')
