@@ -2,7 +2,75 @@ const connection = require('../database/connection')
 const util = require('../util/uteis')
 const DAOScheduling = require('../database/DAO/DAOScheduling')
 const moment = require('moment-timezone');
+const { verify } = require('jsonwebtoken');
 
+function verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allIntervalDaysAndWeekDays, specificDay, startTime, endTime) {
+    const day = moment(specificDay, "YYYY-MM-DD")
+    //CONFLITO DIA
+    console.log("Verifica conflito:specificDay")
+    allSpecificDay.forEach(element => {
+        var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
+        if (day.format("YYYY-MM-DD") == dia) {
+            console.log('Verifica Conflito de Horario')
+            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+        }
+    });
+
+    //CONFLITO SEMANA
+    console.log("Verifica conflito:weekDays")
+    allWeekDays.forEach(element => {
+        //Separa em uma list ao dias da semana
+        if (!Array.isArray(element.weekDays))
+            element.weekDays = element.weekDays.split(",")
+
+        element.weekDays.forEach(e => {
+            //Dia da semana é o mesmo
+            if (e == day.weekday()) {
+                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+            }
+        })
+    })
+
+    console.log("Verifica conflito:allIntervalDays")
+    //CONFLITO EM UM INTERVALO DE DIAS
+    allIntervalDays.forEach(element => {
+        var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
+        var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
+
+        // console.log(startDay)
+        // console.log(endDay)
+        if (day.isBetween(startDay, endDay, undefined, "[]")) {
+            console.log("Esta entre")
+            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+        }
+    })
+
+    console.log("Verifica conflito:allIntervalDaysandweekday")
+    allIntervalDaysAndWeekDays.forEach(element => {
+        //CONFLITO EM UM INTERVALO DE DIAS
+        if (day.isBetween(startDay, endDay, undefined, "[]")) {
+            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+        }
+
+        //OU
+
+        //CONFLITO SEMANA
+        var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
+        var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
+
+        if (!Array.isArray(element.weekDays))
+            element.weekDays = element.weekDays.split(",")
+        element.weekDays.forEach(e => {
+            //Dia da semana é o mesmo
+            if (e == day.weekday()) {
+                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+            }
+        })
+
+    })
+
+
+}
 function verificaConflitoHorario(startTime, endTime, eleStartTime, eleEndTime) {
     eleStartTime = moment(eleStartTime, 'HH:mm').toString()
     eleEndTime = moment(eleEndTime, 'HH:mm').toString()
@@ -44,72 +112,9 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
     }
 
     if (type == 'specificDay') {
-        const day = moment(specificDay, "YYYY-MM-DD")
-        //CONFLITO DIA
-        allSpecificDay.forEach(element => {
-            var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
-
-            if (specificDay == dia) {
-                console.log('Verifica Conflito de Horario')
-                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
-            }
-        });
-
-        //CONFLITO SEMANA
-        allWeekDays.forEach(element => {
-            //Separa em uma list ao dias da semana
-            if (!Array.isArray(element.weekDays))
-                element.weekDays = element.weekDays.split(",")
-
-            element.weekDays.forEach(e => {
-                //Dia da semana é o mesmo
-                if (e == day.weekday()) {
-                    // console.log("Coincide no dia: " + e)
-                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
-                }
-            })
-        })
-
-        //CONFLITO EM UM INTERVALO DE DIAS
-        allIntervalDays.forEach(element => {
-            var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
-            var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
-
-            // console.log(startDay)
-            // console.log(endDay)
-            if (day.isBetween(startDay, endDay, undefined, "[]")) {
-                console.log("Esta entre")
-                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
-            }
-        })
-
-        allIntervalDaysAndWeekDays.forEach(element => {
-            //CONFLITO EM UM INTERVALO DE DIAS
-            if (day.isBetween(startDay, endDay, undefined, "[]")) {
-                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
-            }
-
-            //OU
-
-            //CONFLITO SEMANA
-            var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
-            var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
-
-            if (!Array.isArray(element.weekDays))
-                element.weekDays = element.weekDays.split(",")
-            element.weekDays.forEach(e => {
-                //Dia da semana é o mesmo
-                if (e == day.weekday()) {
-                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
-                }
-            })
-
-        })
-
-
-
-
-    } else {
+        verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allIntervalDaysAndWeekDays, specificDay, startTime, endTime)
+    }
+    else {
         if (type === 'weekDays') {
             weekDays.forEach(dayWeek => {
                 // console.log(dayWeek)
@@ -138,10 +143,10 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
 
                 allIntervalDays.forEach(element => {
                     var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
-                    var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
+                    var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').add(1, 'days')
 
 
-                    while (startDay.format('YYYY-MM-DD') != endDay) {
+                    while (startDay < endDay) {
                         console.log(startDay.format('YYYY-MM-DD HH:mm'))
 
                         if (startDay.weekday() == dayWeek)
@@ -151,14 +156,128 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
                     }
                 })
 
+                allIntervalDaysAndWeekDays.forEach(element => {
+                    var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                    var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').add(1, 'days')
+
+
+                    while (startDay < endDay) {
+                        console.log(startDay.format('YYYY-MM-DD HH:mm'))
+
+                        if (startDay.weekday() == dayWeek)
+                            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+
+                        startDay.add(1, 'days')
+                    }
+
+
+                    if (!Array.isArray(element.weekDays))
+                        element.weekDays = element.weekDays.split(",")
+
+                    element.weekDays.forEach(e => {
+                        //Dia da semana é o mesmo
+                        if (e == dayWeek) {
+                            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+                        }
+                    })
+                })
             })
         }
         else {
             if (type == 'intervalDays') {
+                startDay = moment(startDay, "YYYY-MM-DD")
+                endDay = moment(endDay, "YYYY-MM-DD").add(1, 'days')
 
-            } else {
+                while (startDay < endDay) {
+                    specificDay = startDay
+                    verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allIntervalDaysAndWeekDays, specificDay, startTime, endTime)
+
+                    console.log(startDay.format('^^ YYYY-MM-DD HH:mm ^^'))
+                    console.log('\n')
+                    startDay.add(1, 'days')
+                }
+
+            }
+            else {
                 if (type == 'weekDaysAndIntervalDays') {
+                    startDay = moment(startDay, "YYYY-MM-DD")
+                    endDay = moment(endDay, "YYYY-MM-DD").add(1, 'days')
 
+                    while (startDay < endDay) {
+                        specificDay = startDay
+                        verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allIntervalDaysAndWeekDays, specificDay, startTime, endTime)
+    
+                        console.log(startDay.format('^^ YYYY-MM-DD HH:mm ^^'))
+                        console.log('\n')
+                        startDay.add(1, 'days')
+                    }
+                    
+                    weekDays.forEach(dayWeek => {
+                        // console.log(dayWeek)
+                        allSpecificDay.forEach(element => {
+                            var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                            if (dia.weekday() == dayWeek) {
+                                console.log('Conflito com specificDay')
+                                verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+
+                            }
+                        })
+
+                        allWeekDays.forEach(element => {
+                            //Transformar a string em array um unica vez
+                            if (!Array.isArray(element.weekDays))
+                                element.weekDays = element.weekDays.split(",")
+
+                            element.weekDays.forEach(e => {
+                                //Dia da semana é o mesmo
+                                if (e == dayWeek) {
+                                    // console.log("Coincide no dia: " + e)
+                                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+                                }
+                            })
+                        })
+
+                        allIntervalDays.forEach(element => {
+                            var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                            var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').add(1, 'days')
+
+
+                            while (startDay < endDay) {
+                                console.log(startDay.format('YYYY-MM-DD HH:mm'))
+
+                                if (startDay.weekday() == dayWeek)
+                                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+
+                                startDay.add(1, 'days')
+                            }
+                        })
+
+                        allIntervalDaysAndWeekDays.forEach(element => {
+                            var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                            var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').add(1, 'days')
+
+
+                            while (startDay < endDay) {
+                                console.log(startDay.format('YYYY-MM-DD HH:mm'))
+
+                                if (startDay.weekday() == dayWeek)
+                                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+
+                                startDay.add(1, 'days')
+                            }
+
+
+                            if (!Array.isArray(element.weekDays))
+                                element.weekDays = element.weekDays.split(",")
+
+                            element.weekDays.forEach(e => {
+                                //Dia da semana é o mesmo
+                                if (e == dayWeek) {
+                                    verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+                                }
+                            })
+                        })
+                    })
                 }
 
             }
@@ -183,6 +302,7 @@ function insertWeekDays(params) {
 function insertIntervalDaysAndWeekDays(params) {
     console.log('insertIntervalDaysAndWeekDays')
 }
+
 module.exports = {
     async index(req, res) {
 
@@ -223,7 +343,7 @@ module.exports = {
         } else {
             //Inserir em um intervalo de dias
             if (weekDays == undefined) {
-                verificaConflito('intervalDays', startTime, endTime, startDay, endDay)
+                verificaConflito('intervalDays', startTime, endTime, null, null, startDay, endDay)
                 insertIntervalDays()
             }
             else {
