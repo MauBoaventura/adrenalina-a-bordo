@@ -38,11 +38,11 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
 
     startTime = moment(startTime, 'HH:mm').toString()
     endTime = moment(endTime, 'HH:mm').toString()
-    
+
     if (startTime > endTime || startTime == endTime) {
         throw 'startTime => endTime'
     }
-    
+
     if (type == 'specificDay') {
         const day = moment(specificDay, "YYYY-MM-DD")
         //CONFLITO DIA
@@ -58,7 +58,8 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
         //CONFLITO SEMANA
         allWeekDays.forEach(element => {
             //Separa em uma list ao dias da semana
-            element.weekDays = element.weekDays.split(",")
+            if (!Array.isArray(element.weekDays))
+                element.weekDays = element.weekDays.split(",")
 
             element.weekDays.forEach(e => {
                 //Dia da semana é o mesmo
@@ -94,7 +95,8 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
             var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
             var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD HH:mm')
 
-            element.weekDays = element.weekDays.split(",")
+            if (!Array.isArray(element.weekDays))
+                element.weekDays = element.weekDays.split(",")
             element.weekDays.forEach(e => {
                 //Dia da semana é o mesmo
                 if (e == day.weekday()) {
@@ -109,7 +111,47 @@ async function verificaConflito(type, startTime, endTime, specificDay, weekDays,
 
     } else {
         if (type === 'weekDays') {
+            weekDays.forEach(dayWeek => {
+                // console.log(dayWeek)
+                allSpecificDay.forEach(element => {
+                    var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                    if (dia.weekday() == dayWeek) {
+                        console.log('Conflito com specificDay')
+                        verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
 
+                    }
+                })
+
+                allWeekDays.forEach(element => {
+                    //Transformar a string em array um unica vez
+                    if (!Array.isArray(element.weekDays))
+                        element.weekDays = element.weekDays.split(",")
+
+                    element.weekDays.forEach(e => {
+                        //Dia da semana é o mesmo
+                        if (e == dayWeek) {
+                            // console.log("Coincide no dia: " + e)
+                            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+                        }
+                    })
+                })
+
+                allIntervalDays.forEach(element => {
+                    var startDay = moment(element.startDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute')
+                    var endDay = moment(element.endDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
+
+
+                    while (startDay.format('YYYY-MM-DD') != endDay) {
+                        console.log(startDay.format('YYYY-MM-DD HH:mm'))
+
+                        if (startDay.weekday() == dayWeek)
+                            verificaConflitoHorario(startTime, endTime, element.startTime, element.endTime)
+
+                        startDay.add(1, 'days')
+                    }
+                })
+
+            })
         }
         else {
             if (type == 'intervalDays') {
@@ -187,7 +229,7 @@ module.exports = {
             else {
                 //Inserir em dias da semana (infinity)
                 if (endDay == undefined) {
-                    verificaConflito('weekDays', startTime, endTime, weekDays)
+                    verificaConflito('weekDays', startTime, endTime, null, weekDays)
                     insertWeekDays()
                 }
                 //Inserir em dias da semana em um intervalo de dias
