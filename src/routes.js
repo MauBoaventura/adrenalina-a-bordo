@@ -5,6 +5,7 @@ const authentication = require('./util/authentication')
 const LoginController = require('./controllers/LoginController')
 const UserController = require('./controllers/UserController')
 const SchedulingController = require('./controllers/SchedulingController')
+const VehicleController = require('./controllers/VehicleController')
 
 //Login
 routes.post('/login', LoginController.login)
@@ -23,5 +24,11 @@ routes.post('/scheduling', SchedulingController.post)
 routes.put('/scheduling/:cpf', authentication.verificacaoJWT, SchedulingController.update)
 routes.delete('/scheduling/:cpf', authentication.verificacaoJWT, SchedulingController.delete)
 
+// Meio de transporte (Vehicle)
+routes.get('/vehicle', VehicleController.index)
+routes.get('/vehicle/:id', VehicleController.get)
+routes.post('/vehicle', VehicleController.post)
+routes.put('/vehicle/:id', authentication.verificacaoJWT, VehicleController.update)
+routes.delete('/vehicle/:id', authentication.verificacaoJWT, VehicleController.delete)
 
 module.exports = routes
