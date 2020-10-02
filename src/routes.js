@@ -6,6 +6,7 @@ const LoginController = require('./controllers/LoginController')
 const UserController = require('./controllers/UserController')
 const SchedulingController = require('./controllers/SchedulingController')
 const VehicleController = require('./controllers/VehicleController')
+const TripController = require('./controllers/TripController')
 
 //Login
 routes.post('/login', LoginController.login)
@@ -30,5 +31,11 @@ routes.get('/vehicle/:id', VehicleController.get)
 routes.post('/vehicle', VehicleController.post)
 routes.put('/vehicle/:id', authentication.verificacaoJWT, VehicleController.update)
 routes.delete('/vehicle/:id', authentication.verificacaoJWT, VehicleController.delete)
+
+// Viagem (Trip)
+routes.get('/trip', TripController.index)
+routes.get('/trip/:id', TripController.get)
+routes.post('/trip', TripController.post)
+routes.delete('/trip/:id', authentication.verificacaoJWT, TripController.delete)
 
 module.exports = routes
