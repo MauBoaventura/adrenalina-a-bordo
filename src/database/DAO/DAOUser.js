@@ -14,17 +14,27 @@ module.exports = {
 
     },
 
-    async getOneByCPF(cpf) {
+    async getOneById(id) {
         try {
             var client = await connection('users')
-            .select("*")
-            .where({ "cpf": cpf, "deletedAt": null })
-            .first()
+                .select("*")
+                .where({ "id": id, "deletedAt": null })
+                .first()
         } catch (err) {
             return { error: err }
         }
-        console.log(cpf)
-        console.log(client)
+        return client;
+    },
+
+    async getOneByCPF(cpf) {
+        try {
+            var client = await connection('users')
+                .select("*")
+                .where({ "cpf": cpf, "deletedAt": null })
+                .first()
+        } catch (err) {
+            return { error: err }
+        }
         return client;
     },
 
@@ -66,7 +76,7 @@ module.exports = {
 
     async insert(dados) {
         try {
-           await connection('users').insert(dados)
+            await connection('users').insert(dados)
         } catch (err) {
             return { error: err }
         }
