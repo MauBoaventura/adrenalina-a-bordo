@@ -1,5 +1,3 @@
-const connection = require('../database/connection')
-const util = require('../util/uteis')
 const DAOTrip = require('../database/DAO/DAOTrip')
 const DAOScheduling = require('../database/DAO/DAOScheduling')
 const DAOVehicle = require('../database/DAO/DAOVehicle')

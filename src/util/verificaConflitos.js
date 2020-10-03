@@ -1,5 +1,6 @@
 const moment = require('moment-timezone');
 const DAOScheduling = require('../database/DAO/DAOScheduling')
+
 function verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allIntervalDaysAndWeekDays, specificDay, startTime, endTime) {
     const day = moment(specificDay, "YYYY-MM-DD")
     //CONFLITO DIA

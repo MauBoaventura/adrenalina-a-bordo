@@ -1,4 +1,3 @@
-const connection = require('../database/connection')
 const util = require('../util/uteis')
 const DAOUser = require('../database/DAO/DAOUser')
 
