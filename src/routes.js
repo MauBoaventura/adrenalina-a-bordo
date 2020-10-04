@@ -21,10 +21,10 @@ routes.delete('/user/:cpf', authentication.verificacaoJWT, UserController.delete
 
 // Agendamento (Scheduling)
 routes.get('/scheduling', SchedulingController.index)
-routes.get('/scheduling/:cpf', SchedulingController.get)
+routes.get('/scheduling/:id', SchedulingController.get)
 routes.post('/scheduling', SchedulingController.post)
-routes.put('/scheduling/:cpf', authentication.verificacaoJWT, SchedulingController.update)
-routes.delete('/scheduling/:cpf', authentication.verificacaoJWT, SchedulingController.delete)
+routes.put('/scheduling/:id', authentication.verificacaoJWT, SchedulingController.update)
+routes.delete('/scheduling/:id', authentication.verificacaoJWT, SchedulingController.delete)
 
 // Meio de transporte (Vehicle)
 routes.get('/vehicle', VehicleController.index)

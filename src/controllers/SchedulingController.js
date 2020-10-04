@@ -23,52 +23,62 @@ module.exports = {
     },
 
     async post(req, res) {
-        const startTime = req.body.startTime;
-        const endTime = req.body.endTime;
+        try {
 
-        const specificDay = req.body.specificDay;
+            const startTime = req.body.startTime;
+            const endTime = req.body.endTime;
 
-        const weekDays = req.body.weekDays;
-        if (weekDays != undefined)
-            req.body.weekDays = req.body.weekDays.toString();
+            const specificDay = req.body.specificDay;
 
-        const startDay = req.body.startDay;
-        const endDay = req.body.endDay
+            const weekDays = req.body.weekDays;
+            if (weekDays != undefined)
+                req.body.weekDays = req.body.weekDays.toString();
 
-        //Inserir em um dia específico
-        if (specificDay != undefined) {
-            verifica.verificaConflito('specificDay', startTime, endTime, specificDay)
-            verifica.insertSpecificDay()
-        } else {
-            //Inserir em um intervalo de dias
-            if (weekDays == undefined) {
-                verifica.verificaConflito('intervalDays', startTime, endTime, null, null, startDay, endDay)
-                verifica.insertIntervalDays()
-            }
-            else {
-                //Inserir em dias da semana (infinity)
-                if (endDay == undefined) {
-                    verifica.verificaConflito('weekDays', startTime, endTime, null, weekDays)
-                    verifica.insertWeekDays()
+            const startDay = req.body.startDay;
+            const endDay = req.body.endDay
+            const vehicle = req.body.vehicle
+
+            //Inserir em um dia específico
+            if (specificDay != undefined) {
+                await verifica.verificaConflito('specificDay', startTime, endTime, specificDay, null, null, null, vehicle)
+                delete req.body.startDay
+                delete req.body.endDay
+                delete req.body.weekDays
+
+            } else {
+                //Inserir em um intervalo de dias
+                if (weekDays == undefined) {
+                    verifica.verificaConflito('intervalDays', startTime, endTime, null, null, startDay, endDay, vehicle)
+                    delete req.body.weekDays
+                    delete req.body.specificDay
                 }
-                //Inserir em dias da semana em um intervalo de dias
                 else {
-                    verifica.verificaConflito('weekDaysAndIntervalDays', startTime, endTime, weekDays, startDay, endDay)
-                    verifica.insertIntervalDaysAndWeekDays()
+                    //Inserir em dias da semana (infinity)
+                    if (endDay == undefined) {
+                        verifica.verificaConflito('weekDays', startTime, endTime, null, weekDays, null, null, vehicle)
+                        delete req.body.startDay
+                        delete req.body.endDay
+                        delete req.body.specificDay
+                    }
+                    //Inserir em dias da semana em um intervalo de dias
+                    else {
+                        verifica.verificaConflito('weekDaysAndIntervalDays', startTime, endTime, null, weekDays, startDay, endDay, vehicle)
+                        delete req.body.specificDay
+                    }
                 }
             }
+        } catch (error) {
+            return res.status(400).send({ error: error })
         }
 
-
-
-
+        delete req.body.vehicle
 
         //Insere no banco
-        // try {
-        //     await DAOScheduling.verifica.insert(req.body)
-        // } catch (error) {
-        //     return res.status(400).send({ error: error })
-        // }
+        try {
+            await DAOScheduling.insert(req.body)
+        } catch (error) {
+            return res.status(401).send({ error: error })
+        }
         res.status(200).send()
     },
 

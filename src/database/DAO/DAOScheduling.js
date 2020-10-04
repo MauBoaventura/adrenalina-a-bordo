@@ -28,6 +28,63 @@ module.exports = {
         return client;
     },
 
+    async getAllSpecificDayByVehicle(vehicle) {
+        try {
+            var client = await connection('schedulings')
+                .select("*")
+                .andWhereNot({ 'specificDay': null })
+                .where({ "schedulings.deletedAt": null, "trips.vehicleId": vehicle, "trips.deletedAt": null })
+                .innerJoin('trips', 'trips.schedulingId', 'schedulings.id')
+        } catch (err) {
+            throw err
+
+        }
+        return client;
+    },
+
+    async getAllWeekDaysByVehicle(vehicle) {
+        try {
+            var client = await connection('schedulings')
+                .select("*")
+                .andWhereNot({ 'weekDays': null })
+                .andWhere({ 'endDay': null })
+                .where({ "schedulings.deletedAt": null, "trips.vehicleId": vehicle, "trips.deletedAt": null })
+                .innerJoin('trips', 'trips.schedulingId', 'schedulings.id')
+        } catch (err) {
+            throw err
+
+        }
+        return client;
+    },
+
+    async getAllIntervalDaysByVehicle(vehicle) {
+        try {
+            var client = await connection('schedulings')
+                .select("*")
+                .andWhereNot({ 'endDay': null })
+                .andWhere({ 'weekDays': null })
+                .where({ "schedulings.deletedAt": null, "trips.vehicleId": vehicle, "trips.deletedAt": null })
+                .innerJoin('trips', 'trips.schedulingId', 'schedulings.id')
+        } catch (err) {
+            throw err
+        }
+        return client;
+    },
+
+    async getAllIntervalDaysAndWeekDaysByVehicle(vehicle) {
+        try {
+            var client = await connection('schedulings')
+                .select("*")
+                .andWhereNot({ 'endDay': null, 'weekDays': null })
+                .where({ "schedulings.deletedAt": null, "trips.vehicleId": vehicle, "trips.deletedAt": null })
+                .innerJoin('trips', 'trips.schedulingId', 'schedulings.id')
+        } catch (err) {
+            throw err
+
+        }
+        return client;
+    },
+
     async getAllSpecificDay() {
         try {
             var client = await connection('schedulings')
@@ -41,7 +98,7 @@ module.exports = {
         return client;
     },
 
-    async getAllWeekDays(id) {
+    async getAllWeekDays() {
         try {
             var client = await connection('schedulings')
                 .select("*")
@@ -55,7 +112,7 @@ module.exports = {
         return client;
     },
 
-    async getAllIntervalDays(id) {
+    async getAllIntervalDays() {
         try {
             var client = await connection('schedulings')
                 .select("*")
@@ -68,7 +125,8 @@ module.exports = {
         }
         return client;
     },
-    async getAllIntervalDaysAndWeekDays(id) {
+
+    async getAllIntervalDaysAndWeekDays() {
         try {
             var client = await connection('schedulings')
                 .select("*")
@@ -93,7 +151,6 @@ module.exports = {
         }
         return client;
     },
-
 
     async deleteOneById(id) {
         try {
@@ -126,9 +183,6 @@ module.exports = {
         } catch (err) {
             throw err
         }
-    },
-
-
-
+    }
 
 }

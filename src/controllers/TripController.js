@@ -41,6 +41,7 @@ module.exports = {
             })
         }
 
+        //Verificacao de conflito
 
         //Insere no banco
         try {
