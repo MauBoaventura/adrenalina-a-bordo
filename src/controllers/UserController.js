@@ -1,3 +1,4 @@
+const connection = require('../database/connection')
 const util = require('../util/uteis')
 const DAOUser = require('../database/DAO/DAOUser')
 
@@ -16,7 +17,7 @@ module.exports = {
                 error: "Client do not exist!"
             })
         }
-        let client= await DAOUser.getOneByCPF(cpf);
+        let client = await DAOUser.getOneByCPF(cpf);
         res.json(client)
     },
 
@@ -41,11 +42,11 @@ module.exports = {
         //Insere no banco
         try {
             req.body.password = await util.criptografar(req.body.password)
-            await DAOUser.insert(req.body)
+            var user = await DAOUser.insert(req.body)
         } catch (error) {
             res.status(400).send({ error: error })
         }
-        res.status(200).send()
+        res.status(200).json(user)
     },
 
     async delete(req, res) {
