@@ -2,7 +2,7 @@ const app = require("../../index");
 const request = require('supertest');
 const { expect, describe, it } = require('@jest/globals');
 
-describe('Adrenalina a bordo', () => {
+describe('Adrenalina a bordo: integration user', () => {
     var token = null;
 
     it('should add one user', async () => {
