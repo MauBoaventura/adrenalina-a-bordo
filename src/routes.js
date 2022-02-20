@@ -10,6 +10,9 @@ const TripController = require('./controllers/TripController')
 const TripUsersController = require('./controllers/TripUsersController')
 
 //Login
+routes.get('/', (req, res)=>{
+    res.send('API no ar!!')
+})
 routes.post('/login', LoginController.login)
 
 // Usuarios (User)

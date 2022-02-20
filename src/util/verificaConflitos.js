@@ -8,6 +8,7 @@ function verifySpecificDay(allSpecificDay, allWeekDays, allIntervalDays, allInte
         //CONFLITO DIA
         console.log("Verifica conflito:specificDay")
         allSpecificDay.forEach(element => {
+            
             var dia = moment(element.specificDay, "YYYY-MM-DD").add(new Date().getTimezoneOffset(), 'minute').format('YYYY-MM-DD')
             if (day.format("YYYY-MM-DD") == dia) {
                 console.log('Verifica Conflito de Horario')

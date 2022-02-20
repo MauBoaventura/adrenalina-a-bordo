@@ -40,7 +40,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           whoami
-          cd ~/node-github-demo
+          cd ~/adrenalina-a-bordo
           git pull origin master
           npm install --production
-          pm2 restart node-app
+          pm2 restart src/bin/server.js
