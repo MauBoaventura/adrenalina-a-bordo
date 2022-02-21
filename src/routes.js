@@ -11,7 +11,7 @@ const TripUsersController = require('./controllers/TripUsersController')
 
 //Login
 routes.get('/', (req, res)=>{
-    res.send('API no ar!!')
+    res.send('API no aar!!')
 })
 routes.post('/login', LoginController.login)
 
